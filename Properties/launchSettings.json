@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "PixelMCQuestsGeneration": {
+      "commandName": "Project",
+      "commandLineArgs": "D:\\downloads\\Defeat_100.json"
+    }
+  }
+}
