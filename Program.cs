@@ -1,8 +1,5 @@
 ﻿using PixelMCQuestsGeneration.Serialization;
-using System.Linq;
-
-// See https://aka.ms/new-console-template for more information
-Console.WriteLine("Hello, World!");
+using PixelMCQuestsGeneration.Console;
 
 Console.WriteLine(args[0]);
 
@@ -18,4 +15,17 @@ using (StreamReader reader = new StreamReader(args[0])) {
 }
 
 PixelmonQuest pixelmonQuest = PixelmonQuest.FromJson(fileContents);
+
+List<IQuestWriter> Writers = new List<IQuestWriter>
+{
+    new StringsWriter(pixelmonQuest)
+};
+
+Writers.ToList().ForEach(w => w.GiveConsole());
+
+Console.WriteLine();
 Console.WriteLine(pixelmonQuest.ToJson());
+
+using (StreamWriter writer = new StreamWriter(args[0])) {
+    writer.Write(pixelmonQuest.ToJson());
+}

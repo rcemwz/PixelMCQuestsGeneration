@@ -22,9 +22,5 @@ namespace PixelMCQuestsGeneration.Console
             System.Console.Write(new string(' ', System.Console.WindowWidth - cursorLeft));
             System.Console.SetCursorPosition(cursorLeft, currentLine);
         }
-
-        public void AutoComplete() { 
-            
-        }
     }
 }
