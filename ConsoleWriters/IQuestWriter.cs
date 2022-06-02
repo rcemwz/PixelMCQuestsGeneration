@@ -10,5 +10,6 @@ namespace PixelMCQuestsGeneration.Console
     {
 
         public void GiveConsole();
+        public void Save();
     }
 }

@@ -11,11 +11,13 @@ namespace PixelMCQuestsGeneration.ConsoleWriters
     internal class StageWriter : IQuestWriter
     {
         private PixelmonQuest _pixelmonQuest;
-        private Dictionary<string,string>.Enumerator _stringsEnumerator;
+        private Dictionary<string, string>.Enumerator _stringsEnumerator;
+        private List<Stage> _stages;
 
         public StageWriter(Serialization.PixelmonQuest pixelmonQuest)
         {
             this._pixelmonQuest = pixelmonQuest;
+            this._stages = _pixelmonQuest.Stages;
         }
 
         public void ClearCurrentLine(int cursorLeft)
@@ -26,7 +28,7 @@ namespace PixelMCQuestsGeneration.ConsoleWriters
             System.Console.SetCursorPosition(cursorLeft, currentLine);
         }
 
-        private void StartAutoComplete() { 
+        private void StartAutoComplete() {
             this._stringsEnumerator = this._pixelmonQuest.Strings.GetEnumerator();
         }
 
@@ -38,15 +40,83 @@ namespace PixelMCQuestsGeneration.ConsoleWriters
         }
 
         private void ConsoleAutoComplete() {
+            string word = NextAutoComplete();
             ClearCurrentLine(System.Console.CursorLeft);
-            System.Console.WriteLine(NextAutoComplete());
+            System.Console.WriteLine();
+        }
+
+        private long RetrieveLong(string prompt) {
+            long x;
+            do
+            {
+                System.Console.WriteLine(prompt);
+            } while (!long.TryParse(System.Console.ReadLine(), out x));
+            return x;
+        }
+
+        private string RetrieveString(string prompt) {
+            string? inp;
+            do
+            {
+                System.Console.WriteLine(prompt);
+                inp = System.Console.ReadLine();
+            } while (inp == null);
+            return inp;
+        }
+
+        private List<string> RetrieveList(string prompt) {
+            List<string> list = new List<string>(); 
+            StringBuilder sb = new StringBuilder();
+            do
+            {
+                System.Console.WriteLine(prompt);
+
+                while (true)
+                {
+                    ConsoleKeyInfo consoleKey = System.Console.ReadKey();
+                    char key = consoleKey.KeyChar;
+
+                    if (consoleKey.Key == ConsoleKey.Enter)
+                        break;
+
+                    if(consoleKey.Key == ConsoleKey.Tab)
+                    {
+                        // clear tab char, autocomplete
+                        ClearCurrentLine(System.Console.CursorLeft - 1);
+                    }
+
+                    sb.Append(key);
+                }
+
+                list.Add(sb.ToString());
+            } while (sb.Length == 0);
+
+            return list;
         }
 
         public void GiveConsole()
         {
-            // type objectives, on tab call ConsoleAutoComplete. This will clear the whole line so need to clear just the word.
+            while (true) {
+                Stage newStage = new Stage();
+                newStage.StageStage = RetrieveLong("Stage: ");
+                newStage.NextStage = RetrieveLong("Next Stage: ");
+                newStage.Icon = RetrieveString("Icon: ");
+                newStage.Objectives = RetrieveList("Objectives: ");
+                newStage.Actions = RetrieveList("Actions: ");
+                this._stages.Add(newStage);
 
-            throw new NotImplementedException();
+                System.Console.Write("Another stage?");
+                string s = System.Console.ReadLine();
+                if (!string.IsNullOrEmpty(s) && s.ToLower()[0] == 'n')
+                    break;
+            }
+
+            this.Save();
+        }
+
+        public void Save()
+        {
+            this._pixelmonQuest.Stages = this._stages;
         }
     }
 }
