@@ -70,7 +70,7 @@ namespace PixelMCQuestsGeneration.ConsoleWriters
             do
             {
                 System.Console.WriteLine(prompt);
-
+                this.StartAutoComplete();
                 while (true)
                 {
                     ConsoleKeyInfo consoleKey = System.Console.ReadKey();
@@ -81,8 +81,10 @@ namespace PixelMCQuestsGeneration.ConsoleWriters
 
                     if(consoleKey.Key == ConsoleKey.Tab)
                     {
-                        // clear tab char, autocomplete
+                        // this will not clear the autocomplete suggestion if tab is pressed repeatedly
+                        // introduce feature when this one is tested properly
                         ClearCurrentLine(System.Console.CursorLeft - 1);
+                        System.Console.Write(this.NextAutoComplete());
                     }
 
                     sb.Append(key);
