@@ -28,21 +28,24 @@ namespace PixelMCQuestsGeneration.Console
             System.Console.SetCursorPosition(cursorLeft, currentLine);
         }
 
+        public void ClearLetters(int numberChars) { 
+            for (int i = 0; i < numberChars; i++) 
+                System.Console.Write("\b \b");
+        }
+
         private void StartAutoComplete() {
             this._stringsEnumerator = this._pixelmonQuest.Strings.GetEnumerator();
         }
 
         private string NextAutoComplete()
         {
-            var x = _stringsEnumerator.Current;
-            _stringsEnumerator.MoveNext();
-            return x.Key;
-        }
+            KeyValuePair<string, string> x = _stringsEnumerator.Current;
+            // might be null on first try here
 
-        private void ConsoleAutoComplete() {
-            string word = NextAutoComplete();
-            ClearCurrentLine(System.Console.CursorLeft);
-            System.Console.WriteLine();
+            bool moveNext = _stringsEnumerator.MoveNext();
+            if(!moveNext)
+                StartAutoComplete();
+            return x.Key;
         }
 
         private long RetrieveLong(string prompt) {
@@ -71,6 +74,8 @@ namespace PixelMCQuestsGeneration.Console
             {
                 System.Console.WriteLine(prompt);
                 this.StartAutoComplete();
+                string lastAutoComplete = "";
+                bool isLastActionAutoComplete = false;
                 while (true)
                 {
                     ConsoleKeyInfo consoleKey = System.Console.ReadKey();
@@ -83,9 +88,15 @@ namespace PixelMCQuestsGeneration.Console
                     {
                         // this will not clear the autocomplete suggestion if tab is pressed repeatedly
                         // introduce feature when this one is tested properly
-                        ClearCurrentLine(System.Console.CursorLeft - 1);
-                        System.Console.Write(this.NextAutoComplete());
-                    }
+                        string a = this.NextAutoComplete();
+                        ClearLetters(ConsoleKey.Tab.ToString().Length);
+                        if (isLastActionAutoComplete)
+                            ClearLetters(lastAutoComplete.Length);
+                        System.Console.Write(a);
+                        lastAutoComplete = a;
+                        isLastActionAutoComplete = true;
+                    } else
+                        isLastActionAutoComplete = false;
 
                     sb.Append(key);
                 }
@@ -100,8 +111,8 @@ namespace PixelMCQuestsGeneration.Console
         {
             while (true) {
                 Stage newStage = new Stage();
-                newStage.StageStage = RetrieveLong("Stage: ");
-                newStage.NextStage = RetrieveLong("Next Stage: ");
+                newStage.StageStage = RetrieveLong("Stage Number: ");
+                newStage.NextStage = RetrieveLong("Next Stage Number: ");
                 newStage.Icon = RetrieveString("Icon: ");
                 newStage.Objectives = RetrieveList("Objectives: ");
                 newStage.Actions = RetrieveList("Actions: ");
