@@ -6,7 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace PixelMCQuestsGeneration.ConsoleWriters
+namespace PixelMCQuestsGeneration.Console
 {
     internal class StageWriter : IQuestWriter
     {

@@ -18,7 +18,8 @@ PixelmonQuest pixelmonQuest = PixelmonQuest.FromJson(fileContents);
 
 List<IQuestWriter> Writers = new List<IQuestWriter>
 {
-    new StringsWriter(pixelmonQuest)
+    new StringsWriter(pixelmonQuest),
+    new StageWriter(pixelmonQuest),
 };
 
 Writers.ToList().ForEach(w => w.GiveConsole());
