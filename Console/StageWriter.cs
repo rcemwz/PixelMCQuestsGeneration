@@ -28,9 +28,14 @@ namespace PixelMCQuestsGeneration.Console
             System.Console.SetCursorPosition(cursorLeft, currentLine);
         }
 
-        public void ClearLetters(int numberChars) { 
-            for (int i = 0; i < numberChars; i++) 
-                System.Console.Write("\b \b");
+        public void ClearLetters(int numberChars) {
+
+            new string[] { "\b", " ", "\b" }
+            .ToList()
+            .ForEach(c => {
+                for (int i = 0; i < numberChars; i++)
+                    System.Console.Write(c);
+            });
         }
 
         private void StartAutoComplete() {
@@ -39,12 +44,13 @@ namespace PixelMCQuestsGeneration.Console
 
         private string NextAutoComplete()
         {
-            KeyValuePair<string, string> x = _stringsEnumerator.Current;
-            // might be null on first try here
-
             bool moveNext = _stringsEnumerator.MoveNext();
-            if(!moveNext)
+            if (!moveNext)
+            {
                 StartAutoComplete();
+                _stringsEnumerator.MoveNext();
+            }
+            KeyValuePair<string, string> x = _stringsEnumerator.Current;
             return x.Key;
         }
 
@@ -86,10 +92,8 @@ namespace PixelMCQuestsGeneration.Console
 
                     if(consoleKey.Key == ConsoleKey.Tab)
                     {
-                        // this will not clear the autocomplete suggestion if tab is pressed repeatedly
-                        // introduce feature when this one is tested properly
                         string a = this.NextAutoComplete();
-                        ClearLetters(ConsoleKey.Tab.ToString().Length);
+                        ClearLetters(4);
                         if (isLastActionAutoComplete)
                             ClearLetters(lastAutoComplete.Length);
                         System.Console.Write(a);
